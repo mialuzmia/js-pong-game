@@ -92,7 +92,8 @@ function draw() {
     allModesBasicSetup();
 
     moveOpponentRacket();
-    moveRacket(UP_ARROW, DOWN_ARROW);
+    moveRacket(87, 83);
+
 
   }
   // if multi player selected, loads the things needed for multi play and the basic setup
@@ -131,16 +132,20 @@ function allModesBasicSetup(){
 function keyPressed() {
   if (keyCode === UP_ARROW) {
     selectedButton = 1;
+    return false;
   } else if (keyCode === DOWN_ARROW) {
     selectedButton = 2;
+    return false;
   } else if (keyCode === ENTER) {
     if (selectedButton === 1) {
       // Start single player game
       mode = "SINGLE_PLAYER";
+    return false;
       // Other game setup for single player
     } else if (selectedButton === 2) {
       // Start multiplayer game
       mode = "MULTIPLAYER";
+    return false;
       // Other game setup for multiplayer
     }
   }
@@ -245,9 +250,13 @@ function moveRacket(up, down){
   // uses methods from p5 lib to control the racket with up and down arrow keys
   if (keyIsDown(up) && racketPositionY > 0){
     racketPositionY -=10;
+    return false;
+
   } 
   if (keyIsDown(down) && racketPositionY + racketHeight < height){
     racketPositionY +=10;
+    return false;
+
   }
 }
 
@@ -255,9 +264,13 @@ function moveRacket1InMultiplayer(){
   // uses methods from p5 lib to control the racket with up and down arrow keys
   if (keyIsDown(87) && racketPositionY > 0){
     racketPositionY -=10;
+    return false;
+
   } 
   if (keyIsDown(83) && racketPositionY + racketHeight < height){
     racketPositionY +=10;
+    return false;
+
   }
 }
 
@@ -265,9 +278,11 @@ function moveRacket2InMultiplayer(){
   // uses method keyIsDown from p5 lib to control the racket with up and down arrow keys
   if (keyIsDown(UP_ARROW) ){
     opponentRacketPositionY-=10;
+    // return false;
   } 
   if (keyIsDown(DOWN_ARROW) ){
     opponentRacketPositionY +=10;
+    // return false;
   }
   preventOpponentRacketFromGoingOffScreen();
 }

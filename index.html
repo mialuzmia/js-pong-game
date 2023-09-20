@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
   <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/addons/p5.sound.min.js"></script>
@@ -10,10 +10,20 @@
   </head>
   <body>
     <main >
-      <h1>Pong Game</h1>
-      <!-- <button id="playButton" onclick="playAndPauseGame()">Play</button> -->
-      <section id="canvasContainer">
-      </section>
+      <h1 class="title">Pong Game</h1>
+      <em><p class="author">by mialuzmia</p></em>
+
+      <section id="canvasContainer" class="canvas__container"></section>
+
+      <h2 class="subtitle">Instruções:</h2>
+
+      <ul class="instructions__list">
+        <li>Selecione o modo de jogo com as setas do teclado.</li>
+        <li>No modo Single Player(1 jogador), a raquete (da esquerda) é controlada pelas pelas teclas 'W" e "S" do teclado.</li>
+        <li>No modo Multi Player(2 jogadores), a raquete 1 (da esquerda) é controlada pelas teclas 'W" e "S", enquanto a raquete 2 (da direita) é controlada com as setinhas. </li>
+        <li>Um jogador faz ponto quando o outro deixa a bolinha bater na parede atras da raquete.</li>
+        <li>No canto superior esquerdo da tela, há um botao de pause, que pode ser acionado clicando com o mouse.</li>
+      </ul>
     </main>
     <script src="js/main.js"></script>
     <script src="js/p5.collide2d.js" ></script>
