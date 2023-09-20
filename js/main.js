@@ -1,4 +1,3 @@
-
 // ball size and position variables
 let ballPositionX = 300;
 let ballPositionY = 200;
@@ -19,33 +18,10 @@ let racketHeight = 90;
 let opponentRacketPositionX = 581;
 let opponentRacketPositionY = 150;
 
-
-// control variable to check the ball and racket collision
-let areRacketAndBallColliding = false
-
-// game score variables
-let playerScore = 0;
-let opponentScore = 0;
-
 // sounds
 let racketSound;
 let scoreSound;
 let backgroundMusic;
-
-// boolean variable to track if the game is playing or paused
-let isGameRunning = false;
-let playButton = document.getElementById('playButton');
-
-// buttons size and position variables
-let button1X = 200;
-let button1Y = 150;
-let buttonWidth = 200;
-let buttonHeight = 50;
-let button2X = 200;
-let button2Y = 250;
-let selectedButton = 1;
-
-let mode = "HOMEPAGE";
 
 function preload(){
   // preload the sounds
@@ -68,51 +44,50 @@ function setup() {
 
 }
 
-// function playAndPauseGame() {
-//   if (isGameRunning) {
-//     noLoop(); // Pause the game
-//     isGameRunning = false;
-//     playButton.textContent = 'Play';
-//     backgroundMusic.pause();
 
-//   } else {
-//     backgroundMusic.loop();
-//     loop(); // Start or resume the game
-//     isGameRunning = true;
-//     playButton.textContent = 'Pause';
-//   }
-// }
+// sigkle/multiplayer buttons size and position variables
+
+let singlePlayerButtonX = 200;
+let singlePlayerButtonY = 150;
+let gameModeButtonsWidth = 200;
+let gameModeButtonsHeight = 50;
+let multiPlayerButtonX = 200;
+let multiPlayerButtonY = 250;
+let selectedButton = 1;
+
+// game mode variable
+let mode = "HOMEPAGE";
 
 function draw() {
   background(0);
   
   if(mode === "HOMEPAGE"){
-    // Draw buttons
+    // draw game mode buttons
     noStroke();
     fill(245, 140, 0);
-    rect(button1X, button1Y, buttonWidth, buttonHeight, 10);
-    rect(button2X, button2Y, buttonWidth, buttonHeight, 10);
+    rect(singlePlayerButtonX, singlePlayerButtonY, gameModeButtonsWidth, gameModeButtonsHeight, 10);
+    rect(multiPlayerButtonX, multiPlayerButtonY, gameModeButtonsWidth, gameModeButtonsHeight, 10);
 
-    // Highlight the selected button
+    // highlight the selected button
     stroke(250);
     noFill();
     if (selectedButton === 1) {
-      rect(button1X, button1Y, buttonWidth, buttonHeight, 10);
+      rect(singlePlayerButtonX, singlePlayerButtonY, gameModeButtonsWidth, gameModeButtonsHeight, 10);
     } else if (selectedButton === 2) {
-      rect(button2X, button2Y, buttonWidth, buttonHeight, 10);
+      rect(multiPlayerButtonX, multiPlayerButtonY, gameModeButtonsWidth, gameModeButtonsHeight, 10);
     }
 
     // Display buttons text
     textSize(26);
     textAlign(CENTER);
     fill(255);
-    text("1 Jogador", button1X + buttonWidth / 2, button1Y + buttonHeight / 2 + 10);
-    text("2 Jogadores", button2X + buttonWidth / 2, button2Y + buttonHeight / 2 + 10);
+    text("1 Jogador", singlePlayerButtonX + gameModeButtonsWidth / 2, singlePlayerButtonY + gameModeButtonsHeight / 2 + 10);
+    text("2 Jogadores", multiPlayerButtonX + gameModeButtonsWidth / 2, multiPlayerButtonY + gameModeButtonsHeight / 2 + 10);
 
     // verrify button pressed
     keyPressed();
 }
-  
+  // if single player selected, loads the things needed for single play and the basic setup
   if(mode == "SINGLE_PLAYER"){
     allModesBasicSetup();
 
@@ -120,16 +95,16 @@ function draw() {
     moveRacket(UP_ARROW, DOWN_ARROW);
 
   }
+  // if multi player selected, loads the things needed for multi play and the basic setup
   if(mode === "MULTIPLAYER"){
     allModesBasicSetup();
 
     moveRacket(87, 83);
     moveRacket2InMultiplayer();
-
-    
   }
   
 }
+
 function allModesBasicSetup(){
     drawBall();
     
@@ -149,6 +124,8 @@ function allModesBasicSetup(){
     changeScore();
     
     fixBallGettingStuckinTheRacketsBug(0);
+
+    drawPlayPauseButton();
 }
 
 function keyPressed() {
@@ -169,6 +146,61 @@ function keyPressed() {
   }
 }
 
+
+// pause button size and positions variables
+let playPauseButtonX = 35;
+let playPauseButtonY = 10;
+let playPauseButtonSize = 40;
+// boolean variable to track if the game is playing or paused
+let isGameRunning = true;
+
+function drawPlayPauseButton() {
+  // draw the button container
+  fill(0, 0, 0, 0);
+  stroke(255);
+  rect(playPauseButtonX, playPauseButtonY, playPauseButtonSize, playPauseButtonSize, 10);
+  
+  
+  // ckeck if the game is running or not and display pause or play icon based on that information
+  fill(255);
+  if (isGameRunning) {
+    // Draw pause icon
+    let barWidth = 10;
+    let barHeight = 20;
+    let spacing = 5;
+    rect(playPauseButtonX + (playPauseButtonSize - barWidth * 2 - spacing) / 2, playPauseButtonY + 10, barWidth, barHeight);
+    rect(playPauseButtonX + (playPauseButtonSize - barWidth * 2 - spacing) / 2 + barWidth + spacing, playPauseButtonY + 10, barWidth, barHeight);
+  } else {
+    // Draw play icon
+    triangle(
+      playPauseButtonX + 10, playPauseButtonY + 10,
+      playPauseButtonX + 10, playPauseButtonY + 30,
+      playPauseButtonX + 30, playPauseButtonY + 20
+    );
+  }
+}
+
+function mousePressed() {
+  // mouseX and Y are variables from p5 lib, this functiion tracks the position of the mouse using
+  // those variables, so we can actually click in the button
+  if (
+    mouseX >= playPauseButtonX &&
+    mouseX <= playPauseButtonX + playPauseButtonSize &&
+    mouseY >= playPauseButtonY &&
+    mouseY <= playPauseButtonY + playPauseButtonSize
+  ) {
+    // here if the button is clicked, the game pauses or plays based on the control variable
+    isGameRunning = !isGameRunning;
+    if (isGameRunning) {
+      loop(); //play the game
+      backgroundMusic.loop();
+    } else {
+      noLoop(); // pause the game
+      backgroundMusic.pause();
+    }
+  }
+}
+
 function fixBallGettingStuckinTheRacketsBug(){
     if (ballPositionX - ballRadius < 0){
       ballPositionX = 30;
@@ -176,6 +208,7 @@ function fixBallGettingStuckinTheRacketsBug(){
       ballPositionX = width - 30
     }
 }
+
 
 function drawBall (){
     // uses the circle function in p5 lib to draw the ball
@@ -239,8 +272,6 @@ function moveRacket2InMultiplayer(){
   preventOpponentRacketFromGoingOffScreen();
 }
 
-
-
 function moveOpponentRacket(){
   // Define a speed for the opponent's racket
   let speed = 6.3;
@@ -269,6 +300,30 @@ function preventOpponentRacketFromGoingOffScreen() {
   }
 }
 
+
+// control variable to check the ball and racket collision
+let areRacketAndBallColliding = false
+
+function checkRacketAndBallCollision(x, y){
+  // uses the collideRectCircle function in the p5.collide.js lib to check the collision
+
+  areRacketAndBallColliding = collideRectCircle(x, y, racketWidth, racketHeight, ballPositionX, ballPositionY, ballRadius);
+  
+  // if the ball collides with the racket, the X speed is inverted to reverse the movement   
+
+  if (areRacketAndBallColliding){
+    ballSpeedX *= -1; // Reverse the X speed
+    racketSound.play();
+    
+    // Move the ball a little away from the racket to prevent sticking
+    if (ballPositionX < width / 2) {
+      ballPositionX = x + racketWidth + ballRadius;
+    } else {
+      ballPositionX = x - ballRadius;
+    }
+  }
+}
+
 function checkRacketAndBallCollision(x, y){
   // uses the collideRectCircle function in the p5.collide.js lib to check the collision
   
@@ -280,6 +335,10 @@ function checkRacketAndBallCollision(x, y){
     racketSound.play();
   }
 }
+
+// game score variables
+let playerScore = 0;
+let opponentScore = 0;
 
 function drawScoreboard(){
   //general style
