@@ -1,3 +1,4 @@
+
 // ball size and position variables
 let ballPositionX = 300;
 let ballPositionY = 200;
@@ -31,44 +32,141 @@ let racketSound;
 let scoreSound;
 let backgroundMusic;
 
+// boolean variable to track if the game is playing or paused
+let isGameRunning = false;
+let playButton = document.getElementById('playButton');
+
+// buttons size and position variables
+let button1X = 200;
+let button1Y = 150;
+let buttonWidth = 200;
+let buttonHeight = 50;
+let button2X = 200;
+let button2Y = 250;
+let selectedButton = 1;
+
+let mode = "HOMEPAGE";
+
 function preload(){
-  backgroundMusic = loadSound("../assets/trilha.mp3");
-  scoreSound = loadSound("../assets/ponto.mp3");
-  racketSound = loadSound("../assets/raquetada.mp3")
+  // preload the sounds
+  backgroundMusic = loadSound("assets/trilha.mp3");
+  scoreSound = loadSound("assets/ponto.mp3");
+  racketSound = loadSound("assets/raquetada.mp3");
   
 }
 
 function setup() {
-  createCanvas(600, 400);
+  // crates the canvas with p5
+  let canvas = createCanvas(600, 400);
+
+  // adds the canvas to html as child of the element that has the canvasContainer id
+  canvas.parent('canvasContainer');
+
+
   backgroundMusic.loop();
+  
+
 }
+
+// function playAndPauseGame() {
+//   if (isGameRunning) {
+//     noLoop(); // Pause the game
+//     isGameRunning = false;
+//     playButton.textContent = 'Play';
+//     backgroundMusic.pause();
+
+//   } else {
+//     backgroundMusic.loop();
+//     loop(); // Start or resume the game
+//     isGameRunning = true;
+//     playButton.textContent = 'Pause';
+//   }
+// }
 
 function draw() {
   background(0);
   
-  drawBall();
-  
-  moveBall();
-  
-  checkBallCollision();
-  
-  drawRacket(racketPositionX, racketPositionY);
-  
-  moveRacket();
+  if(mode === "HOMEPAGE"){
+    // Draw buttons
+    noStroke();
+    fill(245, 140, 0);
+    rect(button1X, button1Y, buttonWidth, buttonHeight, 10);
+    rect(button2X, button2Y, buttonWidth, buttonHeight, 10);
 
-  checkRacketAndBallCollision(racketPositionX, racketPositionY);
-  checkRacketAndBallCollision(opponentRacketPositionX, opponentRacketPositionY);
+    // Highlight the selected button
+    stroke(250);
+    noFill();
+    if (selectedButton === 1) {
+      rect(button1X, button1Y, buttonWidth, buttonHeight, 10);
+    } else if (selectedButton === 2) {
+      rect(button2X, button2Y, buttonWidth, buttonHeight, 10);
+    }
+
+    // Display buttons text
+    textSize(26);
+    textAlign(CENTER);
+    fill(255);
+    text("1 Jogador", button1X + buttonWidth / 2, button1Y + buttonHeight / 2 + 10);
+    text("2 Jogadores", button2X + buttonWidth / 2, button2Y + buttonHeight / 2 + 10);
+
+    // verrify button pressed
+    keyPressed();
+}
   
+  if(mode == "SINGLE_PLAYER"){
+    allModesBasicSetup();
+
+    moveOpponentRacket();
+    moveRacket(UP_ARROW, DOWN_ARROW);
+
+  }
+  if(mode === "MULTIPLAYER"){
+    allModesBasicSetup();
+
+    moveRacket(87, 83);
+    moveRacket2InMultiplayer();
+
+    
+  }
   
-  drawRacket(opponentRacketPositionX, opponentRacketPositionY );
-  
-  moveOpponentRacket();
-  
-  drawScoreboard();
-  
-  changeScore();
-  
-  fixBallGettingStuckinTheRacketsBug(0);
+}
+function allModesBasicSetup(){
+    drawBall();
+    
+    moveBall();
+    
+    checkBallCollision();
+
+    drawRacket(racketPositionX, racketPositionY);
+
+    drawRacket(opponentRacketPositionX, opponentRacketPositionY );
+    
+    checkRacketAndBallCollision(racketPositionX, racketPositionY);
+    checkRacketAndBallCollision(opponentRacketPositionX, opponentRacketPositionY);
+    
+    drawScoreboard();
+    
+    changeScore();
+    
+    fixBallGettingStuckinTheRacketsBug(0);
+}
+
+function keyPressed() {
+  if (keyCode === UP_ARROW) {
+    selectedButton = 1;
+  } else if (keyCode === DOWN_ARROW) {
+    selectedButton = 2;
+  } else if (keyCode === ENTER) {
+    if (selectedButton === 1) {
+      // Start single player game
+      mode = "SINGLE_PLAYER";
+      // Other game setup for single player
+    } else if (selectedButton === 2) {
+      // Start multiplayer game
+      mode = "MULTIPLAYER";
+      // Other game setup for multiplayer
+    }
+  }
 }
 
 function fixBallGettingStuckinTheRacketsBug(){
@@ -109,33 +207,44 @@ function drawRacket(x,y){
   
 }
 
-function moveRacket(){
+
+function moveRacket(up, down){
   // uses methods from p5 lib to control the racket with up and down arrow keys
-  if (keyIsDown(UP_ARROW) && racketPositionY > 0){
+  if (keyIsDown(up) && racketPositionY > 0){
     racketPositionY -=10;
   } 
-  if (keyIsDown(DOWN_ARROW) && racketPositionY + racketHeight < height){
+  if (keyIsDown(down) && racketPositionY + racketHeight < height){
     racketPositionY +=10;
   }
 }
 
-
-function checkRacketAndBallCollision(x, y){
-  // uses the collideRectCircle function in the p5.collide.js lib to check the collision
-  
-  areRacketAndBallColliding = collideRectCircle(x, y, racketWidth, racketHeight, ballPositionX, ballPositionY, ballRadius);
-  
-  // if the ball collides with the racket, the X speed is inverted to reverse the movement   
-  if(areRacketAndBallColliding){
-    ballSpeedX *= -1;
-    racketSound.play();
+function moveRacket1InMultiplayer(){
+  // uses methods from p5 lib to control the racket with up and down arrow keys
+  if (keyIsDown(87) && racketPositionY > 0){
+    racketPositionY -=10;
+  } 
+  if (keyIsDown(83) && racketPositionY + racketHeight < height){
+    racketPositionY +=10;
   }
 }
+
+function moveRacket2InMultiplayer(){
+  // uses method keyIsDown from p5 lib to control the racket with up and down arrow keys
+  if (keyIsDown(UP_ARROW) ){
+    opponentRacketPositionY-=10;
+  } 
+  if (keyIsDown(DOWN_ARROW) ){
+    opponentRacketPositionY +=10;
+  }
+  preventOpponentRacketFromGoingOffScreen();
+}
+
+
 
 function moveOpponentRacket(){
   // Define a speed for the opponent's racket
   let speed = 6.3;
-
+  
   // Calculate the direction to move the racket
   let direction = ballPositionY - (opponentRacketPositionY + racketHeight / 2);
 
@@ -148,12 +257,27 @@ function moveOpponentRacket(){
     opponentRacketPositionY += speed;
   }
 
-  // Prevent the racket from going off-screen
+  preventOpponentRacketFromGoingOffScreen();
+}
+
+function preventOpponentRacketFromGoingOffScreen() {
   if (opponentRacketPositionY < 0){
     opponentRacketPositionY = 0;
   }
   if (opponentRacketPositionY + racketHeight > height){
     opponentRacketPositionY = height - racketHeight;
+  }
+}
+
+function checkRacketAndBallCollision(x, y){
+  // uses the collideRectCircle function in the p5.collide.js lib to check the collision
+  
+  areRacketAndBallColliding = collideRectCircle(x, y, racketWidth, racketHeight, ballPositionX, ballPositionY, ballRadius);
+  
+  // if the ball collides with the racket, the X speed is inverted to reverse the movement   
+  if(areRacketAndBallColliding){
+    ballSpeedX *= -1;
+    racketSound.play();
   }
 }
 
